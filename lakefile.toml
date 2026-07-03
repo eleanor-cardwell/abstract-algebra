@@ -1,0 +1,6 @@
+name = "Algebra"
+version = "0.1.0"
+defaultTargets = ["Algebra"]
+
+[[lean_lib]]
+name = "Algebra"
