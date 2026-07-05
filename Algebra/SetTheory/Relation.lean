@@ -35,6 +35,9 @@ structure EquivalenceRelation (X: Type u₁) where
   symmetric: Relation.Symmetric R
   transitive: Relation.Transitive R
 
+instance {X : Type u₁} : Coe (EquivalenceRelation X) (X → X → Prop) where
+    coe R := R.R
+
 /-
 Let A be a set. A partition on A is a set F ⊆ 𝓟(A) such that
 - each set S ∈ F is nonempty;
@@ -46,6 +49,9 @@ structure Partition (X: Type u₁) where
   nonempty: ∀ S ∈ F, Set.Nonempty S
   disjoint: ∀ S ∈ F, ∀ T ∈ F, S ≠ T → S ∩ T = ∅
   union: Set.BigUnion F = Set.FullSet
+
+instance {X : Type u₁} : Coe (Partition X) (Set (Set X)) where
+    coe 𝓟 := 𝓟.F
 
 /--
 If you have an equivalence relation on A, then you have a partition on A.

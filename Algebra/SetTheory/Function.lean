@@ -2,33 +2,14 @@ import Algebra.SetTheory.Relation
 
 variable {X: Type u₁} {Y: Type u₂} {Z: Type u₃}
 
--- Injective, surjective, and bijective functions
-
-/-
-A function f: X → Y is injective if
-∀ x₁, x₂ ∈ X, f(x₁) = f(x₂) → x₁ = x₂
--/
-def Injective (f: X → Y): Prop :=
-  ∀ x₁ x₂, f x₁ = f x₂ → x₁ = x₂
-
-/-
-A function f: X → Y is surjective if
-∀ y ∈ Y, ∃ x ∈ X, f(x) = y
--/
-def Surjective (f: X → Y): Prop :=
-  ∀ y, ∃ x, f x = y
-
-/-
-A function is bijective if it is injective and surjective.
--/
-def Bijective (f: X → Y): Prop :=
-  Injective f ∧ Surjective f
-
 
 
 -- Injective, surjective, and bijective functions defined by inverses
 
 namespace Function
+
+def Bijective (f: X → Y): Prop :=
+  Injective f ∧ Surjective f
 
 def Identity: X → X :=
   λ x ↦ x
@@ -120,20 +101,22 @@ theorem surjective_iff_epic (f: X → Y): Surjective f ↔ Epic f := by
 
 
 
--- Canonical decomposition
+-- Inclusion map
 
-/--
-Given a function f: X → Y, you can define an equivalence relation on X by x₁ ~ x₂ ↔ f(x₁) = f(x₂).
--/
-def Function.toEquivalenceRelation (f: X → Y): EquivalenceRelation X := {
-  R := λ x₁ x₂ ↦ f x₁ = f x₂
-  reflexive := by
-    intro _
-    rfl
-  symmetric := by
-    intro x₁ x₂ h
-    exact Eq.symm h
-  transitive := by
-    intro x₁ x₂ x₃ h₁ h₂
-    rw [h₁, h₂]
-}
+def Inclusion {B: Type u₁} (A: Set B): A → B :=
+  λ a ↦ a
+
+theorem inclusion_injective (B: Type u₁) (A: Set B): Injective (Inclusion A) := by
+  intro x₁ x₂ h
+  unfold Inclusion at h
+  exact Subtype.ext h
+
+
+
+-- Image
+
+def Range (f: X → Y): Set Y :=
+  λ y ↦ ∃ x, f x = y
+
+def restrictToRange (f: X → Y): X → f.Range :=
+  λ x ↦ Subtype.mk (f x) (by exists x)
