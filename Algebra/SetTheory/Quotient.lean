@@ -18,18 +18,21 @@ def EquivalenceRelation.toSetoid (R: EquivalenceRelation X): Setoid X := {
 def EquivalenceRelation.toQuotient (R: EquivalenceRelation X): Type u₁ :=
   Quotient R.toSetoid
 
+def EquivalenceRelation.toEquivalenceClass (R: EquivalenceRelation X) (x: X): R.toQuotient :=
+  Quotient.mk R.toSetoid x
 
 
--- Canonical decomposition of a function
 
-/--
-For a set X and equivalence relation ~ on X, the "canonical project" of a set into its
+-- "Canonical decomposition" of a function
+
+/-
+For a set X and equivalence relation ~ on X, the "canonical projection" of a set into its
 quotient is a map X → X / ~ given by x ↦ [x]_~.
 -/
 def EquivalenceRelation.CanonicalProjection (R: EquivalenceRelation X): X → R.toQuotient :=
-  λ x ↦ Quotient.mk R.toSetoid x
+  λ x ↦ R.toEquivalenceClass x
 
-/--
+/-
 The "canonical projection" map is surjective.
 -/
 theorem EquivalenceRelation.canonical_projection_surjective (R: EquivalenceRelation X): Function.Surjective R.CanonicalProjection := by
@@ -38,7 +41,7 @@ theorem EquivalenceRelation.canonical_projection_surjective (R: EquivalenceRelat
   intro x
   exists x
 
-/--
+/-
 Given any function f: X → Y, you can define an equivalence relation on X by x₁ ~ x₂ ↔ f(x₁) = f(x₂).
 -/
 def Function.toEquivalenceRelation (f: X → Y): EquivalenceRelation X := {
@@ -54,7 +57,7 @@ def Function.toEquivalenceRelation (f: X → Y): EquivalenceRelation X := {
     rw [h₁, h₂]
 }
 
-/--
+/-
 For a set X and a function f: X → Y, using the equivalence relation defined above, the "canonical bijection" is a map
 X/~ → range(f) given by [x]_~ ↦ f(x).
 -/
@@ -65,7 +68,7 @@ def Function.CanonicalBijection (f: X → Y) : f.toEquivalenceRelation.toQuotien
     exact h
   )
 
-/--
+/-
 This map is a bijection.
 -/
 theorem Function.canonical_bijection_bijective (f: X → Y): Function.Bijective f.CanonicalBijection := by
@@ -77,10 +80,10 @@ theorem Function.canonical_bijection_bijective (f: X → Y): Function.Bijective 
     apply Quotient.sound
     exact Subtype.mk.inj h
   · intro ⟨y, x, hx⟩
-    exists Quotient.mk f.toEquivalenceRelation.toSetoid x
+    exists f.toEquivalenceRelation.toEquivalenceClass x
     exact Subtype.ext hx
 
-/--
+/-
 Given a function f: X → Y, the following is the "canonical decomposition":
 -/
 theorem Function.canonical_decomposition (f: X → Y): f = (Function.Inclusion f.Range) ∘ (f.CanonicalBijection) ∘ (f.toEquivalenceRelation.CanonicalProjection) := by

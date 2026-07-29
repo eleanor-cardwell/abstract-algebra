@@ -17,6 +17,16 @@ def Symmetric (R: Relation X X): Prop :=
 def Transitive (R: Relation X X): Prop :=
   ∀ x y z: X, R x y → R y z → R x z
 
+-- Order
+
+structure Preorder (X: Type u₁) where
+  R: Relation X X
+  reflexive: Reflexive R
+  transitive: Transitive R
+
+instance {X : Type u₁} : Coe (Preorder X) (X → X → Prop) where
+    coe R := R.R
+
 end Relation
 
 
@@ -53,20 +63,14 @@ structure Partition (X: Type u₁) where
 instance {X : Type u₁} : Coe (Partition X) (Set (Set X)) where
     coe 𝓟 := 𝓟.F
 
-/--
+/-
 If you have an equivalence relation on A, then you have a partition on A.
 -/
 def EquivalenceRelation.toPartition (R: EquivalenceRelation X): Partition X := by
   sorry
 
-/--
+/-
 If you have a parition on A, then you have an equivalence relation on A.
 -/
 def Partition.toEquivalence (𝓟: Partition X): EquivalenceRelation X := by
   sorry
-
-/-
-TODO
-Equivalence relation and partition are equivalent notions, that is, for any set A,
-there exists a bijection between equivalence relations on A and partitions on A.
--/

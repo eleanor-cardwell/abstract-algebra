@@ -34,7 +34,7 @@ def Op (X: Type u₁): Type u₁ :=
   X → X → X
 
 def LeftIdentity (op: X → Y → Y) (e: X): Prop :=
-  ∀ x, op e x = x
+  ∀ y, op e y = y
 
 def RightIdentity (op: X → Y → X) (e: Y): Prop :=
   ∀ x, op x e = x
@@ -48,18 +48,6 @@ def Associative (op: X → X → X): Prop :=
 def Commutative (op: X → X → Y): Prop :=
   ∀ a b, op a b = op b a
 
-def Inverses (op: Op X) (a b e: X): Prop :=
-  op a b = e ∧ op b a = e
-
-def LeftInverse (op: Op X) (inv: X → X) (e: X): Prop :=
-  ∀ a, op (inv a) a = e
-
-def RightInverse (op: Op X) (inv: X → X) (e: X): Prop :=
-  ∀ a, op a (inv a) = e
-
-def Inverse (op: Op X) (inv: X → X) (e: X): Prop :=
-  LeftInverse op inv e ∧ RightInverse op inv e
-
 def DistributiveLeft (op₁ op₂: Op X): Prop :=
   ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)
 
@@ -68,12 +56,3 @@ def DistributiveRight (op₁ op₂: Op X): Prop :=
 
 def Distributive (op₁ op₂: Op X): Prop :=
   DistributiveLeft op₁ op₂ ∧ DistributiveRight op₁ op₂
-
-def AbsorbsLeft (op: Op X) (z: X): Prop :=
-  ∀ a, op z a = z
-
-def AbsorbsRight (op: Op X) (z: X): Prop :=
-  ∀ a, op a z = z
-
-def Absorbs (op: Op X) (z: X): Prop :=
-  AbsorbsLeft op z ∧ AbsorbsRight op z

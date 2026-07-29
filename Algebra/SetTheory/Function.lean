@@ -14,10 +14,10 @@ def Bijective (f: X → Y): Prop :=
 def Identity: X → X :=
   λ x ↦ x
 
-/--
+/-
 Let X and Y be sets. Assume X is nonempty.
-A function f: X → Y is injective if and only if it has a left inverse, that is,
-there exists function g: Y → X such that g ∘ f = id_X.
+A function f: X → Y is injective if and only if it has a left inverse, that is, there exists
+function g: Y → X such that g ∘ f = id_X.
 
 Proof:
 (=>)
@@ -35,10 +35,10 @@ theorem injective_iff_left_inverse (hX: Nonempty X) (f: X → Y): Injective f �
     rw [hg] at h₂
     exact h₂
 
-/--
+/-
 Let X and Y be sets.
-A function g: Y → X is surjective if and only if it has a right inverse, that is,
-there exists a function f: X → Y such that g ∘ f = id_X.
+A function g: Y → X is surjective if and only if it has a right inverse, that is, there exists a
+function f: X → Y such that g ∘ f = id_X.
 
 Proof:
 (=>)
@@ -52,51 +52,49 @@ theorem surjective_iff_right_inverse (g: Y → X): Surjective g ↔ ∃ f, g ∘
   · intro h
     sorry
 
-/--
-A function f: X → Y is bijective if and only if it has an inverse, that is,
-there exists a function g: Y → X such that g ∘ f = id_X and f ∘ g = id_Y.
+/-
+A function f: X → Y is bijective if and only if it has an inverse, that is, there exists a function
+g: Y → X such that g ∘ f = id_X and f ∘ g = id_Y.
 -/
 theorem bijective_iff_inverse (f: X → Y): Bijective f ↔ ∃ g, g ∘ f = Identity ∧ f ∘ g = Identity := by
   sorry
 
 
 
--- Monomorphisms and epimorphisms
+-- Left and right cancellable
 
-/--
-A function f: X → Y is a monomorphism if it is left cancellable, that is,
-for all functions g, h: W → X, f ∘ g = f ∘ h → g = h.
+/-
+A function f: X → Y is left cancellable if for all functions g, h: W → X, f ∘ g = f ∘ h → g = h.
 -/
-def Monic (f: X → Y): Prop :=
+def LeftCancellable (f: X → Y): Prop :=
   ∀ W: Type u₃, ∀ g h: W → X, f ∘ g = f ∘ h → g = h
 
-/--
-A function f: X → Y is injective if and only if it is monic.
+/-
+A function f: X → Y is injective if and only if it left cancellable.
 
 Proof:
 (=>)
 
 (<=)
 -/
-theorem injective_iff_monic (f: X → Y): Injective f ↔ Monic f := by
+theorem injective_iff_left_cancellable (f: X → Y): Injective f ↔ LeftCancellable f := by
   sorry
 
-/--
-A function f: X → Y is an epimorphism if it is right cancellable, that is,
-for all functions g, h: Y → Z, g ∘ f = h ∘ f → g = h.
+/-
+A function f: X → Y is right cancellable if for all functions g, h: Y → Z, g ∘ f = h ∘ f → g = h.
 -/
-def Epic (f: X → Y): Prop :=
+def RightCancellable (f: X → Y): Prop :=
   ∀ Z: Type u₃, ∀ g h: Y → Z, g ∘ f = h ∘ f → g = h
 
-/--
-A function f: X → Y is surjective if and only if it is epic.
+/-
+A function f: X → Y is surjective if and only if it right cancellable.
 
 Proof:
 (=>)
 
 (<=)
 -/
-theorem surjective_iff_epic (f: X → Y): Surjective f ↔ Epic f := by
+theorem surjective_iff_right_cancellable (f: X → Y): Surjective f ↔ RightCancellable f := by
   sorry
 
 
