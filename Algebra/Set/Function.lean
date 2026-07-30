@@ -1,10 +1,12 @@
-import Algebra.SetTheory.Relation
+-- Algebra/Set/Function
+
+import Algebra.Set.Relation
 
 variable {X: Type u₁} {Y: Type u₂} {Z: Type u₃}
 
 
 
--- Injective, surjective, and bijective functions defined by inverses
+-- Injective, surjective, and bijective functions defined by inverses <-- LIE
 
 namespace Function
 

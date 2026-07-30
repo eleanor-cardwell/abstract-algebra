@@ -1,4 +1,6 @@
-import Algebra.SetTheory.Set
+-- Algebra/Set/Relation
+
+import Algebra.Set.Basic
 
 -- Relation
 

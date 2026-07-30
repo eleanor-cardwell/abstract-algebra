@@ -1,3 +1,5 @@
+-- Algebra/Category/Basic
+
 import Algebra.Basic
 
 /-
@@ -9,6 +11,7 @@ Satisfying the following:
 - composition of morphisms is associative; and
 - for any object A ∈ Obj(C), there exists an identity morphism 1_A ∈ Hom(A, A)
 -/
+
 structure Category (Obj: Type u₁) where
   Hom: Obj → Obj → Type u₂
   id (A: Obj): Hom A A
@@ -19,24 +22,6 @@ structure Category (Obj: Type u₁) where
 
 namespace Category
 variable {X: Type u₁}
-
-/-
-Given a category C, we can form its opposite category C^op.
--/
-def Op (C: Category X): Category X := {
-  Hom := λ A B ↦ C.Hom B A
-  id := λ A ↦ C.id A
-  comp := λ g f ↦ C.comp f g
-  comp_assoc := by
-    intro _ _ _ _ f g h
-    exact Eq.symm (C.comp_assoc h g f)
-  comp_id_left := by
-    intro A B f
-    exact C.comp_id_right f
-  comp_id_right := by
-    intro A B F
-    exact C.comp_id_left F
-}
 
 def LeftInverse {C: Category X} {A B: X} (f: C.Hom A B) (g: C.Hom B A): Prop :=
   C.comp g f = C.id A
@@ -138,12 +123,17 @@ in Hom(A, F)
 def Final (C: Category X) (F: X): Prop :=
   ∀ A: X, ∃ f: C.Hom A F, ∀ g: C.Hom A F, f = g
 
+theorem final_objects_isomorphic {C: Category X} {F₁ F₂: X} (h₁: Final C F₁) (h₂: Final C F₂): Isomorphic C F₁ F₂ := by
+  sorry
+
 /-
-Product and coproduct (simple)
+Product
 -/
+def IsProduct (C: Category X) (A B AB: X): Prop :=
+  ∃ πA: C.Hom AB A, ∃ πB: C.Hom AB B, ∀ Z: X, ∀ fA: C.Hom Z A, ∀ fB: C.Hom Z B, ExistsUnique (λ σ: C.Hom Z AB ↦ C.comp πA σ = fA ∧ C.comp πB σ = fB)
+
+def PairHasProduct (C: Category X) (A B: X): Prop :=
+  ∃ AB: X, IsProduct C A B AB
 
 def HasProduct (C: Category X): Prop :=
-  ∀ A B: X, ∃ AB: X, ∃ πA: C.Hom AB A, ∃ πB: C.Hom AB B, ∀ Z: X, ∀ fA: C.Hom Z A, ∀ fB: C.Hom Z B, ExistsUnique (λ σ: C.Hom Z AB ↦ C.comp πA σ = fA ∧ C.comp πB σ = fB)
-
-def HasCoproduct (C: Category X): Prop :=
-  ∀ A B: X, ∃ AB: X, ∃ iA: C.Hom A AB, ∃ iB: C.Hom B AB, ∀ Z: X, ∀ fA: C.Hom A Z, ∀ fB: C.Hom B Z, ExistsUnique (λ σ: C.Hom AB Z ↦ C.comp σ iA = fA ∧ C.comp σ iB = fB)
+  ∀ A B: X, PairHasProduct C A B

@@ -1,4 +1,6 @@
-import Algebra.SetTheory.Function
+-- Algebra/Set/Quotient
+
+import Algebra.Set.Function
 
 variable {X: Type u₁} {Y: Type u₂}
 
