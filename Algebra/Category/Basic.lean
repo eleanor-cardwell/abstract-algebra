@@ -1,6 +1,6 @@
--- Algebra/Category/Basic
+-- Algebra.Category.Basic
 
-import Algebra.Basic
+import Algebra.Logic
 
 /-
 A category C consists of:

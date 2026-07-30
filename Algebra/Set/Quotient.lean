@@ -1,5 +1,6 @@
--- Algebra/Set/Quotient
+-- Algebra.Set.Quotient
 
+import Algebra.Set.Relation
 import Algebra.Set.Function
 
 variable {X: Type u₁} {Y: Type u₂}
@@ -7,7 +8,7 @@ variable {X: Type u₁} {Y: Type u₂}
 -- Define a quotient from an equivalence relation
 
 def EquivalenceRelation.toSetoid (R: EquivalenceRelation X): Setoid X := {
-  r := R
+  r := R.R
   iseqv := by
     constructor
     · exact R.reflexive
@@ -20,19 +21,18 @@ def EquivalenceRelation.toSetoid (R: EquivalenceRelation X): Setoid X := {
 def EquivalenceRelation.toQuotient (R: EquivalenceRelation X): Type u₁ :=
   Quotient R.toSetoid
 
-def EquivalenceRelation.toEquivalenceClass (R: EquivalenceRelation X) (x: X): R.toQuotient :=
+def EquivalenceRelation.equivalenceClass (R: EquivalenceRelation X) (x: X): R.toQuotient :=
   Quotient.mk R.toSetoid x
 
-
-
 -- "Canonical decomposition" of a function
+-- (Not sure the point of this yet)
 
 /-
 For a set X and equivalence relation ~ on X, the "canonical projection" of a set into its
 quotient is a map X → X / ~ given by x ↦ [x]_~.
 -/
 def EquivalenceRelation.CanonicalProjection (R: EquivalenceRelation X): X → R.toQuotient :=
-  λ x ↦ R.toEquivalenceClass x
+  λ x ↦ R.equivalenceClass x
 
 /-
 The "canonical projection" map is surjective.
@@ -64,7 +64,7 @@ For a set X and a function f: X → Y, using the equivalence relation defined ab
 X/~ → range(f) given by [x]_~ ↦ f(x).
 -/
 def Function.CanonicalBijection (f: X → Y) : f.toEquivalenceRelation.toQuotient → f.Range :=
-  Quotient.lift f.restrictToRange (by
+  Quotient.lift f.RestrictCodomain (by
     intro x₁ x₂ h
     apply Subtype.ext
     exact h
@@ -82,7 +82,7 @@ theorem Function.canonical_bijection_bijective (f: X → Y): Function.Bijective 
     apply Quotient.sound
     exact Subtype.mk.inj h
   · intro ⟨y, x, hx⟩
-    exists f.toEquivalenceRelation.toEquivalenceClass x
+    exists f.toEquivalenceRelation.equivalenceClass x
     exact Subtype.ext hx
 
 /-

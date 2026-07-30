@@ -1,4 +1,4 @@
--- Algebra/Category/Constructions
+-- Algebra.Category.Constructions
 
 import Algebra.Category.Basic
 namespace Category

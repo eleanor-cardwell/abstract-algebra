@@ -1,78 +1,44 @@
--- Algebra/Set/Relation
+-- Algebra.Set.Relation
 
-import Algebra.Set.Basic
+-- Relation properties
 
--- Relation
+def Reflexive {X: Type u} (R: X → X → Prop): Prop :=
+  ∀ a, R a a
 
-def Relation (X: Type u₁) (Y: Type u₂): Type (max u₁ u₂) :=
-  X → Y → Prop
+def Irreflexive {X: Type u} (R: X → X → Prop): Prop :=
+  ∀ a, ¬ R a a
 
-variable {X: Type u₁} {Y: Type u₂}
-namespace Relation
+def Symmetric {X: Type u} (R: X → X → Prop): Prop :=
+  ∀ a b, R a b → R b a
 
-def Reflexive (R: Relation X X): Prop :=
-  ∀ x: X, R x x
+def Antisymmetric {X: Type u} (R: X → X → Prop): Prop :=
+  ∀ a b, R a b → R b a → a = b
 
-def Symmetric (R: Relation X X): Prop :=
-  ∀ x y: X, R x y → R y x
+def Transitive {X: Type u} (R: X → X → Prop): Prop :=
+  ∀ a b c, R a b → R b c → R a c
 
-def Transitive (R: Relation X X): Prop :=
-  ∀ x y z: X, R x y → R y z → R x z
+def Total {X: Type u} (R: X → X → Prop): Prop :=
+  ∀ a b, R a b ∨ R b a
 
+-- Relation structure
+
+class Relation (X₁: Type u₁) (X₂: Type u₂) where
+  R: X₁ → X₂ → Prop
+
+instance {X₁: Type u₁} {X₂: Type u₂}: CoeFun (Relation X₁ X₂) (λ _ ↦ X₁ → X₂ → Prop) := ⟨λ R ↦ R.R⟩
+  
 -- Order
 
-structure Preorder (X: Type u₁) where
-  R: Relation X X
-  reflexive: Reflexive R
-  transitive: Transitive R
+class Preorder (X: Type u) extends Relation X X where
+  reflexive: Reflexive toRelation
+  transitive: Transitive toRelation
 
-instance {X : Type u₁} : Coe (Preorder X) (X → X → Prop) where
-    coe R := R.R
+class PartialOrder (X: Type u) extends Preorder X where
+  antisymmetric: Antisymmetric toRelation
 
-end Relation
+-- Equivalence relation
 
-
-
--- Equivalence relation and partition
-
-/-
-Let X be a set. An equivalence on X is a relation R on X such that
-- R is reflexive;
-- R is symmetric; and
-- R is transitive
--/
-structure EquivalenceRelation (X: Type u₁) where
-  R: Relation X X
-  reflexive: Relation.Reflexive R
-  symmetric: Relation.Symmetric R
-  transitive: Relation.Transitive R
-
-instance {X : Type u₁} : Coe (EquivalenceRelation X) (X → X → Prop) where
-    coe R := R.R
-
-/-
-Let A be a set. A partition on A is a set F ⊆ 𝓟(A) such that
-- each set S ∈ F is nonempty;
-- for any sets S, T ∈ F, S and T are disjoint; and
-- ∪ F = A
--/
-structure Partition (X: Type u₁) where
-  F: Set (Set X)
-  nonempty: ∀ S ∈ F, Set.Nonempty S
-  disjoint: ∀ S ∈ F, ∀ T ∈ F, S ≠ T → S ∩ T = ∅
-  union: Set.BigUnion F = Set.FullSet
-
-instance {X : Type u₁} : Coe (Partition X) (Set (Set X)) where
-    coe 𝓟 := 𝓟.F
-
-/-
-If you have an equivalence relation on A, then you have a partition on A.
--/
-def EquivalenceRelation.toPartition (R: EquivalenceRelation X): Partition X := by
-  sorry
-
-/-
-If you have a parition on A, then you have an equivalence relation on A.
--/
-def Partition.toEquivalence (𝓟: Partition X): EquivalenceRelation X := by
-  sorry
+structure EquivalenceRelation (X: Type u) extends Relation X X where
+  reflexive: Reflexive toRelation
+  symmetric: Symmetric toRelation
+  transitive: Transitive toRelation

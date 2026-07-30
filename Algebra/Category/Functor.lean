@@ -1,3 +1,5 @@
+-- Algebra.Category.Functor
+
 import Algebra.Category.Basic
 namespace Category
 

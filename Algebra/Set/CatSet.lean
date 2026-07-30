@@ -1,4 +1,5 @@
--- Algebra/Set/CatSet
+-- Algebra.Set.CatSet
+
 import Algebra.Category.Basic
 import Algebra.Set.Basic
 
@@ -62,5 +63,4 @@ theorem set_has_product: HasProduct CatSet := by
   simp_all
   constructor
   · exists λ z ↦ ⟨fA z, fB z⟩
-  · intro σ₁ σ₂ ⟨⟨hσ₁a, hσ₁b⟩ , ⟨hσ₂a, hσ₂b⟩⟩
-    sorry
+  · sorry
