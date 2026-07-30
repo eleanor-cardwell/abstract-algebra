@@ -3,10 +3,13 @@
 import Algebra.Category.Basic
 import Algebra.Set.Basic
 
+universe u
+
 /-
 The category of sets
 -/
-def CatSet: Category (Type u) := {
+def CatSet: Category := {
+  Obj := Type u
   Hom := λ X Y ↦ X → Y
   id := λ X ↦ (λ x ↦ x)
   comp := λ g f ↦ g ∘ f
