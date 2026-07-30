@@ -63,7 +63,7 @@ def Function.toEquivalenceRelation (f: X → Y): EquivalenceRelation X := {
 For a set X and a function f: X → Y, using the equivalence relation defined above, the "canonical bijection" is a map
 X/~ → range(f) given by [x]_~ ↦ f(x).
 -/
-def Function.CanonicalBijection (f: X → Y) : f.toEquivalenceRelation.toQuotient → f.Range :=
+def Function.CanonicalBijection (f: X → Y): f.toEquivalenceRelation.toQuotient → f.Range :=
   Quotient.lift f.RestrictCodomain (by
     intro x₁ x₂ h
     apply Subtype.ext
