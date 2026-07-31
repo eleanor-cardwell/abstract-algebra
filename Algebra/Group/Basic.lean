@@ -29,7 +29,7 @@ open Group
 
 
 
--- Unpack axioms
+-- Basic theorems
 
 theorem op_inv_left [Group X] (a: X): -a + a = 0 := by
   exact Group.inverse.left a
