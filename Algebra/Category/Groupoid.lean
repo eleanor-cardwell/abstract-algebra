@@ -2,5 +2,6 @@
 
 import Algebra.Category.Basic
 
-structure Groupoid extends Category where
-  iso {A B: Obj} (f: Hom A B): Category.Isomorphism f
+class Groupoid (C: Type u) extends Category C where
+  iso {X Y: C} (f: @Category.Hom C toCategory X Y):
+    @Category.Isomorphism C toCategory X Y f

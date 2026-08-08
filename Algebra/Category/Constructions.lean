@@ -6,31 +6,33 @@ namespace Category
 /-
 Given a category C, we can form its opposite category C^op.
 -/
-def Op (C: Category): Category := {
-  Obj := C
-  Hom := λ A B ↦ C.Hom B A
-  id := λ A ↦ C.id A
-  comp := λ g f ↦ f ≪ g
+def Op (C: Type u) := C
+
+instance opCategory {C: Type u} [Category C]: Category (Op C) where
+  Hom := λ X Y ↦ @Hom C _ Y X
+  id := λ X ↦ @id C _ X
+  comp := λ g f ↦ @comp C _ _ _ _ f g
   comp_assoc := by
     intro _ _ _ _ f g h
-    exact Eq.symm (C.comp_assoc h g f)
+    exact Eq.symm (comp_assoc h g f)
   comp_id_left := by
-    intro A B f
-    exact C.comp_id_right f
+    intro X Y f
+    exact comp_id_right f
   comp_id_right := by
-    intro A B F
-    exact C.comp_id_left F
-}
+    intro X Y f
+    exact comp_id_left f
 
-def Prod (C₁ C₂: Category): Category := {
-  Obj := _root_.Prod C₁ C₂
-  Hom := λ (A₁, A₂) (B₁, B₂) ↦ _root_.Prod (C₁.Hom A₁ B₁) (C₂.Hom A₂ B₂)
-  id := λ (A₁, A₂) ↦ (C₁.id A₁, C₂.id A₂)
-  comp := λ ⟨g₁, g₂⟩ ⟨f₁, f₂⟩ ↦ ⟨g₁ ≪ f₁, g₂ ≪ f₂⟩
+abbrev Prod (C₁: Type u) (C₂: Type v) := _root_.Prod C₁ C₂
+
+instance prodCategory {C₁: Type u} {C₂: Type v}
+    [Category C₁] [Category C₂]: Category (Prod C₁ C₂) where
+  Hom := λ (X₁, X₂) (Y₁, Y₂) ↦ _root_.Prod (@Hom C₁ _ X₁ Y₁) (@Hom C₂ _ X₂ Y₂)
+  id := λ (X₁, X₂) ↦ (@id C₁ _ X₁, @id C₂ _ X₂)
+  comp := λ ⟨g₁, g₂⟩ ⟨f₁, f₂⟩ ↦
+    ⟨@comp C₁ _ _ _ _ g₁ f₁, @comp C₂ _ _ _ _ g₂ f₂⟩
   comp_assoc := sorry
   comp_id_left := sorry
   comp_id_right := sorry
-}
 
 /-
 Let C be a category and A ∈ Obj(C). Define a new category C_A where
@@ -39,28 +41,29 @@ Let C be a category and A ∈ Obj(C). Define a new category C_A where
     f₁ = f₂ ∘ σ
 and the rest is defined as you would expect
 -/
-def Slice (C: Category) (A: C): Category := {
-  Obj := Sigma (λ Z ↦ C.Hom Z A)
-  Hom := λ ⟨Z₁, f₁⟩ ⟨Z₂, f₂⟩ ↦ Subtype (λ σ: C.Hom Z₁ Z₂ ↦ f₁ = f₂ ≪ σ)
-  id := λ ⟨Z, f⟩ ↦ ⟨C.id Z, by rw [compLeft, C.comp_id_right f]⟩
+abbrev Slice {C: Type u} [Category C] (X: C) :=
+  Sigma (λ Y ↦ Hom Y X)
+
+instance sliceCategory {C: Type u} [Category C] {X: C}: Category (Slice X) where
+  Hom := λ ⟨Y₁, f₁⟩ ⟨Y₂, f₂⟩ ↦ Subtype (λ σ: @Hom C _ Y₁ Y₂ ↦ f₁ = f₂ ≪ σ)
+  id := λ ⟨Y, f⟩ ↦ ⟨Category.id Y, by rw [comp_id_right f]⟩
   comp := by
     simp_all
-    intro ⟨Z₁, f₁⟩ ⟨Z₂, f₂⟩ ⟨Z₃, f₃⟩ ⟨σ₂, hσ₂⟩ ⟨σ₁, hσ₁⟩
+    intro ⟨Y₁, f₁⟩ ⟨Y₂, f₂⟩ ⟨Y₃, f₃⟩ ⟨σ₂, hσ₂⟩ ⟨σ₁, hσ₁⟩
     exists σ₂ ≪ σ₁
     calc f₁
     _ = f₂ ≪ σ₁        := by rw [←hσ₁]
     _ = (f₃ ≪ σ₂) ≪ σ₁ := by rw [←hσ₂]
-    _ = f₃ ≪ (σ₂ ≪ σ₁) := by simp only [compLeft, C.comp_assoc]
+    _ = f₃ ≪ (σ₂ ≪ σ₁) := by simp only [comp_assoc]
   comp_assoc := by
-    intro ⟨Z₁, f₁⟩ ⟨Z₂, f₂⟩ ⟨Z₃, f₃⟩ ⟨Z₄, f₄⟩ ⟨σ₁, hσ₁⟩ ⟨σ₂, hσ₂⟩ ⟨σ₃, hσ₃⟩
+    intro ⟨Y₁, f₁⟩ ⟨Y₂, f₂⟩ ⟨Y₃, f₃⟩ ⟨Y₄, f₄⟩ ⟨σ₁, hσ₁⟩ ⟨σ₂, hσ₂⟩ ⟨σ₃, hσ₃⟩
     simp_all
-    exact C.comp_assoc σ₁ σ₂ σ₃
+    exact comp_assoc σ₁ σ₂ σ₃
   comp_id_left := by
-    intro ⟨Z₁, f₁⟩ ⟨Z₂, f₂⟩ ⟨σ, hσ⟩
+    intro ⟨Y₁, f₁⟩ ⟨Y₂, f₂⟩ ⟨σ, hσ⟩
     simp_all
-    exact C.comp_id_left σ
+    exact comp_id_left σ
   comp_id_right := by
-    intro ⟨Z₁, f₁⟩ ⟨Z₂, f₂⟩ ⟨σ, hσ⟩
+    intro ⟨Y₁, f₁⟩ ⟨Y₂, f₂⟩ ⟨σ, hσ⟩
     simp_all
-    exact C.comp_id_right σ
-}
+    exact comp_id_right σ
