@@ -5,65 +5,68 @@ import Algebra.Set.CatSet
 import Algebra.Category.Constructions
 namespace Category
 
-def CovariantHomFunctor (C: Category) (A: C): Functor C CatSet := {
-  objMap := λ Z: C ↦ C.Hom A Z
+def CovariantHomFunctor (C: Type u) [Category C] (X: C): Functor C CatSet := {
+  objMap := λ Z: C ↦ Hom X Z
   homMap := λ f ↦ (λ g ↦ f ≪ g)
   id := by
     intro Z
     funext h
     calc
-      C.id Z ≪ h
-      _ = h := by rw [compLeft, C.comp_id_left]
-      _ = CatSet.id (C.Hom A Z) h := by rfl
+      Category.id Z ≪ h
+      _ = h := by rw [comp_id_left]
+      _ = Category.id (Hom X Z) h := by rfl
   comp := by
     intro _ _ _ f g
     funext h
     calc
       (g ≪ f) ≪ h
-      _ = g ≪ (f ≪ h) := by simp only [compLeft, C.comp_assoc]
+      _ = g ≪ (f ≪ h) := by simp only [comp_assoc]
 }
 
-def ContravariantHomFunctor (C: Category) (B: C): Functor (Op C) CatSet := {
-  objMap := λ Z: C ↦ C.Hom Z B
+def ContravariantHomFunctor (C: Type u) [Category C] (Y: C): Functor (Op C) CatSet := {
+  objMap := λ Z: C ↦ @Hom C _ Z Y
   homMap := λ f ↦ (λ g ↦ g ≪ f)
   id := by
     intro Z
     funext h
-    calc
-      h ≪ C.id Z
-      _ = h := by rw [compLeft, C.comp_id_right]
-      _ = CatSet.id (C.Hom Z B) h := by rfl
+    exact @comp_id_right C _ Z Y h
   comp := by
     intro _ _ _ f g
     funext h
     calc
       h ≪ (f ≪ g)
-      _ = (h ≪ f) ≪ g := by simp only [compLeft, C.comp_assoc]
+      _ = (h ≪ f) ≪ g := by simp only [comp_assoc]
 }
 
-def ContravariantHomFunctor.v2 (C: Category) (B: C): Functor (Op C) CatSet :=
-  CovariantHomFunctor C.Op B
+def ContravariantHomFunctor.v2 (C: Type u) [Category C] (Y: C): Functor (Op C) CatSet :=
+  CovariantHomFunctor (Op C) Y
 
-def HomFunctor (C: Category): Functor (Prod C.Op C) CatSet := {
-  objMap := λ (A₁, A₂) ↦ C.Hom A₁ A₂
+def HomFunctor (C: Type u) [Category C]: Functor (Prod (Op C) C) CatSet := {
+  objMap := λ (X, Y) ↦ @Hom C _ X Y
   homMap := by
-    intro (A₁, A₂) (B₁, B₂) (f₁, f₂)
+    intro (X₁, X₂) (Y₁, Y₂) (f₁, f₂)
     intro g
     exact f₂ ≪ (g ≪ f₁)
   id := by
-    unfold Prod
-    unfold Op
     simp_all
-    intro A₁ A₂
-    simp [C.comp_id_left, C.comp_id_right]
-    rfl
-  comp := by
-    unfold Prod
-    unfold Op
-    simp_all
-    intro A₁ A₂ B₁ B₂ C₁ C₂
-    intro f₁ f₂ g₁ g₂
+    intro X Y
     funext h
-    calc (g₂ ≪ f₂) ≪ (h ≪ (f₁ ≪ g₁))
-    _ = g₂ ≪ ((f₂ ≪ (h ≪ f₁)) ≪ g₁) := by simp [compLeft, C.comp_assoc]
+    change Category.id Y ≪ (h ≪ Category.id X) = h
+    calc
+      Category.id Y ≪ (h ≪ Category.id X)
+      _ = (Category.id Y ≪ h) ≪ Category.id X := by simp only [comp_assoc]
+      _ = h ≪ Category.id X := by
+        rw [@comp_id_left C _ X Y h]
+      _ = h := by
+        exact @comp_id_right C _ X Y h
+  comp := by
+    simp_all
+    intro X₁ X₂ Y₁ Y₂ Z₁ Z₂
+    intro f g
+    rcases f with ⟨f₁, f₂⟩
+    rcases g with ⟨g₁, g₂⟩
+    funext h
+    calc
+      (g₂ ≪ f₂) ≪ (h ≪ (f₁ ≪ g₁))
+      _ = g₂ ≪ ((f₂ ≪ (h ≪ f₁)) ≪ g₁) := by simp [comp_assoc]
 }

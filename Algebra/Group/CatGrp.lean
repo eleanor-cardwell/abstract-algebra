@@ -3,8 +3,9 @@ import Algebra.Group.Hom
 
 -- Help the sigma thing is making this really hard to read 
 
-def Grp: Category := {
-  Obj := Sigma (λ X ↦ Group X)
+abbrev Grp := Sigma (λ X ↦ Group X)
+
+instance groupCategory: Category Grp where
   Hom := λ ⟨_, G₁⟩ ⟨_, G₂⟩ ↦ Group.Hom G₁ G₂
   id := λ ⟨_, G⟩ ↦ Group.IdentityHom
   comp := by
@@ -13,4 +14,3 @@ def Grp: Category := {
   comp_assoc := sorry
   comp_id_left := sorry
   comp_id_right := sorry
-}
